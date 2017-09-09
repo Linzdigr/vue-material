@@ -541,7 +541,7 @@ exports.default = {
       _this2.parentElement.addEventListener('focus', _this2.open);
       _this2.parentElement.addEventListener('mouseleave', _this2.close);
       _this2.parentElement.addEventListener('blur', _this2.close);
-      _this2.parentElement.addEventListener('click', _this2.close);
+      document.addEventListener('click', _this2.close);
     }));
   },
   beforeDestroy: function beforeDestroy() {
@@ -554,7 +554,7 @@ exports.default = {
       this.parentElement.removeEventListener('focus', this.open);
       this.parentElement.removeEventListener('mouseleave', this.close);
       this.parentElement.removeEventListener('blur', this.close);
-      this.parentElement.removeEventListener('click', this.close);
+      document.removeEventListener('click', this.close);
     }
   }
 }; //

@@ -145,7 +145,7 @@
         this.parentElement.addEventListener('focus', this.open);
         this.parentElement.addEventListener('mouseleave', this.close);
         this.parentElement.addEventListener('blur', this.close);
-        this.parentElement.addEventListener('click', this.close);
+        document.addEventListener('click', this.close);
       });
     },
     beforeDestroy() {
@@ -158,7 +158,7 @@
         this.parentElement.removeEventListener('focus', this.open);
         this.parentElement.removeEventListener('mouseleave', this.close);
         this.parentElement.removeEventListener('blur', this.close);
-        this.parentElement.removeEventListener('click', this.close);
+        document.removeEventListener('click', this.close);
       }
     }
   };

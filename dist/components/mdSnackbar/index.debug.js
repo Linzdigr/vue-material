@@ -351,7 +351,8 @@ exports.default = {
       rootElement: {},
       snackbarElement: {},
       directionClass: null,
-      closeTimeout: null
+      closeTimeout: null,
+      rElement: null
     };
   },
 
@@ -411,16 +412,16 @@ exports.default = {
       var _this = this;
 
       if (this.$refs.container) {
-        var removeElement = function removeElement() {
-          _this.$refs.container.removeEventListener(_transitionEndEventName2.default, removeElement);
+        this.rElement = function () {
+          _this.$refs.container.removeEventListener(_transitionEndEventName2.default, _this.rElement);
           _this.removeElement();
         };
 
         _manager2.default.current = null;
         this.active = false;
         this.$emit('close');
-        this.$refs.container.removeEventListener(_transitionEndEventName2.default, removeElement);
-        this.$refs.container.addEventListener(_transitionEndEventName2.default, removeElement);
+        this.$refs.container.removeEventListener(_transitionEndEventName2.default, this.rElement);
+        this.$refs.container.addEventListener(_transitionEndEventName2.default, this.rElement);
         window.clearTimeout(this.closeTimeout);
         this.pendingDuration = this.mdDuration;
       }
