@@ -37,7 +37,8 @@
         rootElement: {},
         snackbarElement: {},
         directionClass: null,
-        closeTimeout: null
+        closeTimeout: null,
+        rElement: null
       };
     },
     computed: {
@@ -94,16 +95,16 @@
       },
       close() {
         if (this.$refs.container) {
-          const removeElement = () => {
-            this.$refs.container.removeEventListener(transitionEndEventName, removeElement);
+          this.rElement = () => {
+            this.$refs.container.removeEventListener(transitionEndEventName, this.rElement);
             this.removeElement();
           };
 
           manager.current = null;
           this.active = false;
           this.$emit('close');
-          this.$refs.container.removeEventListener(transitionEndEventName, removeElement);
-          this.$refs.container.addEventListener(transitionEndEventName, removeElement);
+          this.$refs.container.removeEventListener(transitionEndEventName, this.rElement);
+          this.$refs.container.addEventListener(transitionEndEventName, this.rElement);
           window.clearTimeout(this.closeTimeout);
           this.pendingDuration = this.mdDuration;
         }
