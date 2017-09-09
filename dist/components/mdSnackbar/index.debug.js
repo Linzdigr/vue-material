@@ -396,6 +396,7 @@ exports.default = {
       }
     },
     open: function open() {
+      this.$refs.container.removeEventListener(_transitionEndEventName2.default, this.rElement);
       if (_manager2.default.current) {
         _manager2.default.current.close();
       }

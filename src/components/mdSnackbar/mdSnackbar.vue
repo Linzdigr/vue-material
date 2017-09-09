@@ -81,6 +81,7 @@
         }
       },
       open() {
+        this.$refs.container.removeEventListener(transitionEndEventName, this.rElement);
         if (manager.current) {
           manager.current.close();
         }
