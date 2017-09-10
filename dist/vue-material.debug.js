@@ -8892,12 +8892,13 @@ exports.default = {
   data: function data() {
     return {
       snackbarId: this.id || 'snackbar-' + (0, _uniqueId2.default)(),
+      removedSnackBarElementEventName: 'removedSnackBarElement',
       active: false,
       rootElement: {},
       snackbarElement: {},
       directionClass: null,
       closeTimeout: null,
-      rElement: null
+      removedSnackBarElementEvent: null
     };
   },
 
@@ -8908,9 +8909,7 @@ exports.default = {
       };
 
       this.directionClass = this.mdPosition.replace(/ /g, '-');
-
       cssClasses['md-position-' + this.directionClass] = true;
-
       return cssClasses;
     }
   },
@@ -8930,22 +8929,29 @@ exports.default = {
   },
   methods: {
     removeElement: function removeElement() {
-      if (document.body.contains(this.snackbarElement)) {
+      // if we have the element and we don't want it active anymore, remove it
+      if (document.body.contains(this.snackbarElement) && !this.active) {
         var activeRipple = this.snackbarElement.querySelector('.md-ripple.md-active');
 
         if (activeRipple) {
           activeRipple.classList.remove('md-active');
         }
-
         document.body.removeChild(this.snackbarElement);
       }
+      this.$refs.container.dispatchEvent(this.removedSnackBarElementEvent);
     },
     open: function open() {
-      this.$refs.container.removeEventListener(_transitionEndEventName2.default, this.rElement);
       if (_manager2.default.current) {
+        // we need to wait for the old element to finishing closing before we can open a new one
+        this.$refs.container.removeEventListener(this.removedSnackBarElementEventName, this.showElementAndStartTimer);
+        this.$refs.container.addEventListener(this.removedSnackBarElementEventName, this.showElementAndStartTimer);
         _manager2.default.current.close();
+        return;
       }
-
+      this.showElementAndStartTimer();
+    },
+    showElementAndStartTimer: function showElementAndStartTimer() {
+      this.$refs.container.removeEventListener(this.removedSnackBarElementEventName, this.showElementAndStartTimer);
       _manager2.default.current = this;
       document.body.appendChild(this.snackbarElement);
       window.getComputedStyle(this.$refs.container).backgroundColor;
@@ -8957,17 +8963,20 @@ exports.default = {
     close: function close() {
       var _this = this;
 
+      //we set the flag to false here, because we need to inform the removeElement method that we really
+      // want to remove the element - we're in closing action
+      this.active = false;
       if (this.$refs.container) {
-        this.rElement = function () {
-          _this.$refs.container.removeEventListener(_transitionEndEventName2.default, _this.rElement);
+        var removeElement = function removeElement() {
+          _this.$refs.container.removeEventListener(_transitionEndEventName2.default, removeElement);
           _this.removeElement();
         };
 
+        this.$refs.container.removeEventListener(_transitionEndEventName2.default, removeElement);
         _manager2.default.current = null;
-        this.active = false;
         this.$emit('close');
-        this.$refs.container.removeEventListener(_transitionEndEventName2.default, this.rElement);
-        this.$refs.container.addEventListener(_transitionEndEventName2.default, this.rElement);
+        this.$refs.container.removeEventListener(_transitionEndEventName2.default, removeElement);
+        this.$refs.container.addEventListener(_transitionEndEventName2.default, removeElement);
         window.clearTimeout(this.closeTimeout);
         this.pendingDuration = this.mdDuration;
       }
@@ -8991,6 +9000,7 @@ exports.default = {
       _this2.timeoutStartedAt = 0;
       _this2.pendingDuration = _this2.mdDuration;
     }));
+    this.removedSnackBarElementEvent = new Event(this.removedSnackBarElementEventName);
   },
   beforeDestroy: function beforeDestroy() {
     window.clearTimeout(this.closeTimeout);
