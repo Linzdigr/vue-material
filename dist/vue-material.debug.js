@@ -7116,6 +7116,10 @@ exports.default = {
     mdCloseOnSelect: {
       type: Boolean,
       default: true
+    },
+    mdFixed: {
+      Boolean: Boolean,
+      default: true
     }
   },
   data: function data() {
@@ -7200,8 +7204,8 @@ exports.default = {
 
       position = (0, _getInViewPosition2.default)(this.menuContent, position);
 
-      this.menuContent.style.top = position.top + window.pageYOffset + 'px';
-      this.menuContent.style.left = position.left + window.pageXOffset + 'px';
+      this.menuContent.style.top = position.top + (this.mdFixed ? 0 : window.pageYOffset) + 'px';
+      this.menuContent.style.left = position.left + (this.mdFixed ? 0 : window.pageXOffset) + 'px';
     },
     recalculateOnResize: function recalculateOnResize() {
       window.requestAnimationFrame(this.calculateMenuContentPos);
